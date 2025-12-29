@@ -2,6 +2,22 @@
 
 Este proyecto implementa una solución distribuida para la gestión integral de un restaurante utilizando una arquitectura de **Microservicios** con el ecosistema **Spring Cloud**. El sistema permite administrar inventario (ingredientes), menús, reservas y orquestar operaciones complejas entre ellos.
 
+---
+
+## ⚠️ Aviso: Persistencia y Balanceo de Carga
+
+> **Nota sobre la Base de Datos en Memoria:**
+> Este proyecto utiliza **HSQLDB** (base de datos en memoria) integrada en cada microservicio para facilitar el desarrollo y las pruebas sin necesidad de instalar servidores de base de datos externos.
+>
+> **Implicación en el Balanceo de Carga:**
+> Al levantar múltiples instancias de un mismo microservicio (ej. 2 instancias de `mc_menu`), **cada instancia crea su propia base de datos aislada en memoria**.
+> * **Problema:** Los datos creados en la *Instancia 1* **NO** existen en la *Instancia 2*.
+> * **Consecuencia:** Como Eureka y Ribbon realizan balanceo de carga (Round Robin), es posible que crees un plato en una petición (que va a la Instancia 1) y al intentar consultarlo en la siguiente petición (que va a la Instancia 2), este no aparezca.
+>
+> *Para un entorno de producción real, todos los microservicios deberían conectarse a una única base de datos externa (MySQL/PostgreSQL) para garantizar la consistencia de los datos.*
+
+---
+
 ## 📖 Descripción del Proyecto
 
 El sistema está dividido en múltiples servicios independientes que se comunican entre sí para ofrecer las funcionalidades del restaurante. Incluye patrones de arquitectura como **Configuración Centralizada**, **Descubrimiento de Servicios (Eureka)** y **Balanceo de Carga** (ejecutando múltiples instancias de los servicios de negocio).
